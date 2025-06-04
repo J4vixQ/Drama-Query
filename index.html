@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>TextTech Project</title>
+  <script src="loadAll.js"></script>
+  <script src="printAll.js"></script>
+  <script src="search.js"></script>
+</head>
+<body>
+  <h1>Raw Data</h1>
+  <ul id="dataList"></ul>
+
+  <script>
+    async function main() {
+      const data = await loadAll();
+      if (data) {
+        console.log("Loaded data:", data);
+      } else {
+        console.log("Unable to load data");
+      }
+
+      // print the data to the HTML
+      printAll(data);
+
+      // other functions
+
+    }
+
+    main();
+  </script>
+</body>
+</html>
