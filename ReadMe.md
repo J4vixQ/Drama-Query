@@ -2,13 +2,13 @@
 
 ### Data Preparation
 
-download the tei version .xml file and put them in folder `xml`
+download the tei version **.xml** file and put them in folder `xml`
 
-run `xml2json.py` to convert .xml file to .json file
+run `xml2json.py` to convert **.xml** to **.json**
 
 in MongoDB Compass, create database `TextTech` and collection `drama`
 
-import the .json files to `drama`
+import the **.json** files to `drama`
 
 ### Initialization
 
