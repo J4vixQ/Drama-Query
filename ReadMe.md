@@ -1,3 +1,15 @@
+# Read Me
+
+### Data Preparation
+
+download the tei version .xml file and put them in folder `xml`
+
+run `xml2json.py` to convert .xml file to .json file
+
+in MongoDB Compass, create database `TextTech` and collection `drama`
+
+import the .json files to `drama`
+
 ### Initialization
 
 run `npm init -y` to create a package.json file
@@ -17,4 +29,3 @@ click `Go Live` at bottom right
 
 click again to close server
 
-### Data Structure

@@ -4,7 +4,8 @@ function printAll(data) {
 
   data.forEach(item => {
     const li = document.createElement('li');
-    li.textContent = JSON.stringify(item);
+    const teiHeader = item.TEI?.teiHeader || {};  // only show teiHeader
+    li.textContent = JSON.stringify(teiHeader, null, 2);  // for better readability
     list.appendChild(li);
   });
 }

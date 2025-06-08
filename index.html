@@ -13,7 +13,10 @@
 
   <script>
     async function main() {
-      const data = await loadAll();
+      // TODO: create search window
+
+      // get relevant data
+      const data = await searchAuthor("Udall");
       if (data) {
         console.log("Loaded data:", data);
       } else {
