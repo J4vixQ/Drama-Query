@@ -19,7 +19,8 @@
               "@base": "http://www.wikidata.org/entity/",
               "#text": "Q8018812"
             }
-          }
+          },
+          "titleText": "Gammer Gurton's Needle"
         },
         "publicationStmt": {
           "publisher": {

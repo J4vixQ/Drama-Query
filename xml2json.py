@@ -47,6 +47,14 @@ def convert_xml_to_json(xml_folder, output_folder):
             root = tree.getroot()
             data = etree_to_dict(root)
 
+            # rename the title element
+            try:
+                title_obj = data["TEI"]["teiHeader"]["fileDesc"]["titleStmt"]["title"]
+                if isinstance(title_obj, dict) and "#text" in title_obj:
+                    data["TEI"]["teiHeader"]["fileDesc"]["titleStmt"]["titleText"] = title_obj["#text"]
+            except Exception as e:
+                print(f"⚠️ Warning: Failed to extract title from {filename}: {e}")
+
             json_filename = os.path.splitext(filename)[0] + ".json"
             json_path = os.path.join(output_folder, json_filename)
             with open(json_path, "w", encoding="utf-8") as f:

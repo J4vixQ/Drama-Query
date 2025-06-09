@@ -3,31 +3,46 @@
 <head>
   <meta charset="UTF-8">
   <title>TextTech Project</title>
+  <link rel="stylesheet" href="style.css">
   <script src="loadAll.js"></script>
-  <script src="printAll.js"></script>
   <script src="search.js"></script>
+  <script src="bookshelf.js"></script>
 </head>
 <body>
-  <h1>Raw Data</h1>
+  <h1>Drama Query</h1>
+  <div id="searchBar">
+    <input type="text" id="titleInput" placeholder="Title">
+    <input type="text" id="authorInput" placeholder="Author">
+    <button id="searchButton">Search</button>
+  </div>
+  <div id="cardContainer"></div>
   <ul id="dataList"></ul>
 
   <script>
     async function main() {
-      // TODO: create search window
+      let data;
 
-      // get relevant data
-      const data = await searchAuthor("Udall");
-      if (data) {
-        console.log("Loaded data:", data);
-      } else {
-        console.log("Unable to load data");
-      }
+      // Create search window
+      createSearchBox(async ({ title, author }) => {
+        console.log("title input:", title);
+        console.log("author input:", author);
 
-      // print the data to the HTML
-      printAll(data);
+        // Clear previous results
+        document.getElementById('cardContainer').innerHTML = '';
+        document.getElementById('dataList').innerHTML = '';
 
-      // other functions
+        // Validate input
+        if (!title && !author) {
+          return;
+        }
 
+        // get search results
+        data = await searchCombined(title, author);
+        console.log("Search results:", data);
+        
+        // display search results as cards,
+        bookshelf(data);  // further visualization be called inside this function
+      });
     }
 
     main();
