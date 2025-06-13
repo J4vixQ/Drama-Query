@@ -31,7 +31,15 @@ function bookshelf(data) {
 
     // User click the wanted document card (only 1 card)
     card.onclick = () => {
-      printAll([item]);  // Visualization functions here
+      console.log("Clicked on", item);
+      // Visualization functions here
+      
+      // word cloud
+      const allLines = extractLeafLines(item);
+      const wordCounts = lines2words(allLines);
+      const topWords = getTopWords(wordCounts, 100, 0.1);
+      console.log("Top words:", topWords);
+      displayTopWords(topWords);
     };
 
     container.appendChild(card);

@@ -4,8 +4,10 @@
   <meta charset="UTF-8">
   <title>TextTech Project</title>
   <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/wordcloud@1.1.2/src/wordcloud2.min.js"></script>
   <script src="loadAll.js"></script>
   <script src="search.js"></script>
+  <script src="wordcloud.js"></script>
   <script src="bookshelf.js"></script>
 </head>
 <body>
@@ -17,6 +19,7 @@
   </div>
   <div id="cardContainer"></div>
   <ul id="dataList"></ul>
+  <div id="topWordsOutput"></div>
 
   <script>
     async function main() {
@@ -30,6 +33,7 @@
         // Clear previous results
         document.getElementById('cardContainer').innerHTML = '';
         document.getElementById('dataList').innerHTML = '';
+        document.getElementById('topWordsOutput').innerHTML = '';
 
         // Validate input
         if (!title && !author) {
