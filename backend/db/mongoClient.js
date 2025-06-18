@@ -9,4 +9,14 @@ const client = new MongoClient(uri, {
     }
 });
 
-module.exports = client;
+let isConnected = false;
+
+async function getClient() {
+  if (!isConnected) {
+    await client.connect();
+    isConnected = true;
+  }
+  return client;
+}
+
+module.exports = getClient;

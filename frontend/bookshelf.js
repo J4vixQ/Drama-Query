@@ -1,47 +1,61 @@
-function printAll(data) {
-  const list = document.getElementById('dataList');  // this is the <u1> element in HTML
-  list.innerHTML = '';
+// function printAll(data) {
+//   const list = document.getElementById('dataList');  // this is the <u1> element in HTML
+//   list.innerHTML = '';
 
-  data.forEach(item => {
-    const li = document.createElement('li');
-    const teiHeader = item.TEI?.teiHeader || {};  // only show teiHeader
-    li.textContent = JSON.stringify(teiHeader, null, 2);  // for better readability
-    list.appendChild(li);
-  });
-}
+//   data.forEach(item => {
+//     const li = document.createElement('li');
+//     const teiHeader = item.TEI?.teiHeader || {};  // only show teiHeader
+//     li.textContent = JSON.stringify(teiHeader, null, 2);  // for better readability
+//     list.appendChild(li);
+//   });
+// }
 
 function bookshelf(data) {
   const container = document.getElementById('cardContainer');
-  const infoList = document.getElementById('dataList');
+  // const infoList = document.getElementById('dataList');
+
+  container.innerHTML = '';
+  // infoList.innerHTML = '';
 
   data.forEach((item, index) => {
     const card = document.createElement('div');
     card.className = 'card';
 
-    // extract title and author from TEI structure
-    const title = item.TEI?.teiHeader?.fileDesc?.titleStmt?.titleText || 'No Title';
-    const authorObj = item.TEI?.teiHeader?.fileDesc?.titleStmt?.author?.persName || {};
-    const author = `${authorObj.forename || ''} ${authorObj.surname || ''}`.trim() || 'Unknown Author';
+    const title = item.title || 'No Title';
+    const author = item.author || 'Unknown Author';
+    const publication_date = item.publication_date || 'Unknown Year';
 
-    // only show the title and author in the card
+
     card.innerHTML = `
       <h3>${title}</h3>
       <p><strong>${author}</strong></p>
+      <p><strong>${publication_date}</strong></p>
     `;
 
-    // User click the wanted document card (only 1 card)
-    card.onclick = () => {
-      console.log("Clicked on", item);
-      // Visualization functions here
-      
-      // word cloud
-      const allLines = extractLeafLines(item);
-      const wordCounts = lines2words(allLines);
-      const topWords = getTopWords(wordCounts, 100, 0.1);
-      console.log("Top words:", topWords);
-      displayTopWords(topWords);
+    // Visualizations here
+    card.onclick = async () => {
+      // clear previous visualizations
+      d3.select("#pieChart").selectAll("*").remove();
+      d3.select("#wordCloud").selectAll("*").remove();
+
+      // select book
+      console.log("Clicked on: ", item);
+      console.log("book id: ", item.id);
+      const characters = await getCharacters(item.id);
+      console.log("characters: ", characters);
+      const linesByCharacter = await getLinesByCharacter(item.id, characters);
+      console.log("linesByCharacter: ", linesByCharacter);
+      const counts = lineCounts(linesByCharacter);
+      console.log("Line counts (sorted):", counts);
+
+      // select character
+      drawPieChart(counts, (charId) => {
+        console.log("Clicked on: ", charId);
+        topWords(charId, linesByCharacter);
+      });
     };
 
     container.appendChild(card);
   });
 }
+

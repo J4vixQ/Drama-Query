@@ -4,10 +4,11 @@
   <meta charset="UTF-8">
   <title>TextTech Project</title>
   <link rel="stylesheet" href="style.css">
-  <script src="https://cdn.jsdelivr.net/npm/wordcloud@1.1.2/src/wordcloud2.min.js"></script>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="https://unpkg.com/d3-cloud/build/d3.layout.cloud.js"></script>
   <script src="loadAll.js"></script>
   <script src="search.js"></script>
-  <script src="wordcloud.js"></script>
+  <script src="visualization.js"></script>
   <script src="bookshelf.js"></script>
 </head>
 <body>
@@ -15,33 +16,37 @@
   <div id="searchBar">
     <input type="text" id="titleInput" placeholder="Title">
     <input type="text" id="authorInput" placeholder="Author">
+    <input type="text" id="dateInput" placeholder="Publication Year">
     <button id="searchButton">Search</button>
   </div>
   <div id="cardContainer"></div>
-  <ul id="dataList"></ul>
+  <svg id="pieChart" width="400" height="400"></svg>
   <div id="topWordsOutput"></div>
+  <svg id="wordCloud" width="600" height="400"></svg>
 
   <script>
     async function main() {
       let data;
 
       // Create search window
-      createSearchBox(async ({ title, author }) => {
+      createSearchBox(async ({ title, author, publication_date }) => {
         console.log("title input:", title);
         console.log("author input:", author);
+        console.log("publication date input:", publication_date);
 
         // Clear previous results
         document.getElementById('cardContainer').innerHTML = '';
-        document.getElementById('dataList').innerHTML = '';
         document.getElementById('topWordsOutput').innerHTML = '';
+        d3.select("#pieChart").selectAll("*").remove();
+        d3.select("#wordCloud").selectAll("*").remove();
 
         // Validate input
-        if (!title && !author) {
+        if (!title && !author && !publication_date) {
           return;
         }
 
         // get search results
-        data = await searchCombined(title, author);
+        data = await searchCombined(title, author, publication_date);
         console.log("Search results:", data);
         
         // display search results as cards,
