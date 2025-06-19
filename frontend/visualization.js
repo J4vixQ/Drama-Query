@@ -1,6 +1,6 @@
 function drawPieChart(data, onClickCallback) {
   const margin = { top: 20, right: 150, bottom: 20, left: 20 };
-  const width = 500;
+  const width = 600;
   const height = 400;
   const radius = Math.min(width - margin.left - margin.right, height - margin.top - margin.bottom) / 2;
 
@@ -46,8 +46,12 @@ function drawPieChart(data, onClickCallback) {
     });
 
   // tooltip
+  const totalLine = d3.sum(data, d => d.lineCount);
   arcs.append("title")
-  .text(d => `${d.data.name}: ${d.data.lineCount} lines`);
+    .text(d => {
+      const percent = ((d.data.lineCount / totalLine) * 100).toFixed(1);
+      return `${d.data.name}: ${percent}%`;
+    });
 
   // legend
   const legend = svg.selectAll(".legend")
@@ -66,9 +70,8 @@ function drawPieChart(data, onClickCallback) {
     .attr("x", 18)
     .attr("y", 10)
     .style("font-size", "12px")
-    .text(d => `${d.name}: ${d.lineCount}`);
+    .text(d => `${d.name}: ${d.lineCount} lines`);
 }
-
 
 
 
@@ -79,12 +82,20 @@ function lines2words(lines) {
 
   // common stop words
   const stopWords = new Set([
+    // modern English stop words
     'the', 'and', 'of', 'to', 'in', 'that', 'is', 'with', 'for', 'on', 'as', 'are',
     'was', 'were', 'be', 'by', 'this', 'it', 'from', 'or', 'an', 'at', 'not', 'but',
     'which', 'so', 'a', 'i', 'you', 'we', 'he', 'she', 'they', 'me', 'my', 'your',
     'his', 'her', 'our', 'their', 'what', 'who', 'how', 'when', 'where', 'why',
     'if', 'then', 'shall', 'will', 'may', 'might', 'can', 'could', 'do', 'did',
-    'has', 'have', 'had', 'would', 'should', 'all', 'no', 'yes', 'than', 'thus'
+    'has', 'have', 'had', 'would', 'should', 'all', 'no', 'yes', 'than', 'thus',
+
+    // old English / Shakespearean stop words
+    'thou', 'thee', 'thy', 'thine', 'art', 'hast', 'dost', 'doth', 'shalt',
+    'ye', 'ere', 'nay', 'tis', 'o', 'hath', 'wilt', 'wast', 'wert', 'saith',
+    'methinks', 'perchance', 'wherefore', 'whence', 'hence', 'oft', 'unto',
+    'nought', 'aught', 'anon', 'yea', 'marry', 'nay', 'let', 'ay', 'must',
+    'even', 'yet', 'still', 'now', 'there', 'here', 'these', 'those'
   ]);
 
   lines.forEach(line => {
@@ -130,31 +141,44 @@ function displayTopWords(topWords) {
   container.appendChild(list);
 }
 
-function topWords(charId, linesByCharacter) {
-  const charData = linesByCharacter[charId];
+function topWords(characterId, linesByCharacter) {
+  const charData = linesByCharacter[characterId];
   if (!charData || !Array.isArray(charData.lines)) {
-    console.warn("No lines found for character:", charId);
+    console.warn("No lines found for character:", characterId);
     return;
   }
 
   const wordCounts = lines2words(charData.lines);
   const topWords = getTopWords(wordCounts, 100, 0.1);
-  console.log("Top words for character", charId, ":", topWords);
-  drawWordCloud(topWords);
+  console.log("Top words for character", characterId, ":", topWords);
+  drawWordCloud(topWords, characterId);
 }
 
-function drawWordCloud(words) {
+function drawWordCloud(words, characterId) {
   d3.select("#wordCloud").selectAll("*").remove();
 
+  const margin = { top: 40, right: 20, bottom: 20, left: 20 };
   const svg = d3.select("#wordCloud"),
-        width = +svg.attr("width"),
-        height = +svg.attr("height");
+        width = +svg.attr("width") - margin.left - margin.right,
+        height = +svg.attr("height") - margin.top - margin.bottom;
+
+  // 提取角色名
+  const parts = characterId.split('-');
+  const charName = parts.slice(1).join(' ').replace(/-/g, ' ').toUpperCase();
+
+  // 添加标题
+  svg.append("text")
+    .attr("x", margin.left)
+    .attr("y", margin.top / 2)
+    .attr("font-size", "16px")
+    .attr("fill", "black")
+    .text(`Word Cloud for: ${charName}`);
 
   const layout = d3.layout.cloud()
     .size([width, height])
     .words(words.map(d => ({ text: d.text, size: 10 + d.value })))
     .padding(5)
-    .rotate(() => ~~(Math.random() * 2) * 90)
+    .rotate(0)
     .fontSize(d => d.size)
     .on("end", draw);
 
@@ -162,14 +186,15 @@ function drawWordCloud(words) {
 
   function draw(words) {
     svg.append("g")
-      .attr("transform", `translate(${width / 2}, ${height / 2})`)
+      .attr("transform", `translate(${margin.left + width / 2}, ${margin.top + height / 2})`)
       .selectAll("text")
       .data(words)
       .enter().append("text")
       .style("font-size", d => d.size + "px")
-      .style("fill", () => d3.schemeCategory10[Math.floor(Math.random() * 10)])
+      .style("fill", "black")
       .attr("text-anchor", "middle")
-      .attr("transform", d => `translate(${d.x}, ${d.y})rotate(${d.rotate})`)
+      .attr("transform", d => `translate(${d.x}, ${d.y})`)
       .text(d => d.text);
   }
 }
+

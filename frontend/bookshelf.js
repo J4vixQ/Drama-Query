@@ -17,6 +17,7 @@ function bookshelf(data) {
   container.innerHTML = '';
   // infoList.innerHTML = '';
 
+  // show books within conditions
   data.forEach((item, index) => {
     const card = document.createElement('div');
     card.className = 'card';
@@ -32,26 +33,24 @@ function bookshelf(data) {
       <p><strong>${publication_date}</strong></p>
     `;
 
-    // Visualizations here
     card.onclick = async () => {
-      // clear previous visualizations
-      d3.select("#pieChart").selectAll("*").remove();
+      d3.select("#pieChart").selectAll("*").remove();  // clear previous visualizations
       d3.select("#wordCloud").selectAll("*").remove();
 
-      // select book
+      // select one book from the presented ones
       console.log("Clicked on: ", item);
       console.log("book id: ", item.id);
-      const characters = await getCharacters(item.id);
+      const characters = await getCharacters(item.id);  // characters in book
       console.log("characters: ", characters);
-      const linesByCharacter = await getLinesByCharacter(item.id, characters);
+      const linesByCharacter = await getLinesByCharacter(item.id, characters);  // lines by character in book
       console.log("linesByCharacter: ", linesByCharacter);
-      const counts = lineCounts(linesByCharacter);
+      const counts = lineCounts(linesByCharacter);  // for the pie chart
       console.log("Line counts (sorted):", counts);
 
-      // select character
+      // show characters (with line counts) in the selected book
       drawPieChart(counts, (charId) => {
-        console.log("Clicked on: ", charId);
-        topWords(charId, linesByCharacter);
+        console.log("Clicked on: ", charId);  // select character in the pie chart
+        topWords(charId, linesByCharacter);  // count the top words and draw the word cloud
       });
     };
 

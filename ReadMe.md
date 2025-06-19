@@ -21,5 +21,3 @@ click `Go Live` at bottom right
 
 go to `frontend` in browser
 
-click again to close server
-
