@@ -17,3 +17,8 @@ yarn-error.log*
 
 # Other temporary files
 *.tmp
+
+# Ignore MongoDB runtime files
+mongodb/MongoDB/db/journal/
+mongodb/MongoDB/db/*.log
+mongodb/MongoDB/db/WiredTiger*
