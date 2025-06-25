@@ -60,9 +60,15 @@ public class ReadData {
             // Get drama text author
             String authorFore = xpath.evaluate("//tei:teiHeader//tei:fileDesc//tei:titleStmt//tei:author//tei:persName//tei:forename", document);
             String authorSur = xpath.evaluate("//tei:teiHeader//tei:fileDesc//tei:titleStmt//tei:author//tei:persName//tei:surname", document);
+            String authorName = "";
+            if (!authorFore.isEmpty() || !authorSur.isEmpty()) {
+                authorName = authorFore + " " + authorSur;
+                
+            } else {
+                authorName = xpath.evaluate("//tei:teiHeader//tei:fileDesc//tei:titleStmt//tei:author//tei:persName", document);
+            }
             //System.out.println("Author: " + authorFore + " " + authorSur);
-            result.append("author", authorFore + " " + authorSur);
-
+            result.append("author", authorName);
             //Get drama text creation date
 
             // Get publication
@@ -225,7 +231,7 @@ public class ReadData {
             Document text = new Document();
 
             // Get front text
-            NodeList frontList = document.getElementsByTagName("front");
+            NodeList frontList = document.getElementsByTagNameNS("*", "front");
             if (frontList.getLength() > 0) {
                 Element frontElement = (Element) frontList.item(0);
 
@@ -233,7 +239,7 @@ public class ReadData {
                 String fullText = String.join("\n\n", frontParagraph);
 
                 String quote = "";
-                NodeList quoteList = frontElement.getElementsByTagName("quote");
+                NodeList quoteList = frontElement.getElementsByTagNameNS("*", "quote");
                 if (quoteList.getLength() > 0) {
                     quote = quoteList.item(0).getTextContent().trim();
                 }
@@ -255,18 +261,28 @@ public class ReadData {
                 Element bodyElement = (Element) bodyList.item(0);
 
                 NodeList actList = bodyElement.getElementsByTagNameNS("*", "div");
+
                 for (int i = 0; i < actList.getLength(); i++) {
                     Element act = (Element) actList.item(i);
 
                     NodeList sceneList = act.getElementsByTagNameNS("*", "div");
-                    for (int j = 0; j < sceneList.getLength(); j++) {
-                        Element scene = (Element) sceneList.item(j);
 
-                        List<Document> sceneEntries = bodyText(scene);
+                    if (sceneList.getLength() > 0) {
+                        for (int j = 0; j < sceneList.getLength(); j++) {
+                            Element scene = (Element) sceneList.item(j);
+
+                            List<Document> sceneEntries = bodyText(scene);
+                            for (Document d: sceneEntries) {
+                                bodyContent.add(d);
+                            }
+                        }
+                    } else {
+                        List<Document> sceneEntries = bodyText(act);
                         for (Document d: sceneEntries) {
                             bodyContent.add(d);
                         }
                     }
+
                 }
                 text.append("body", bodyContent);
             } else {
@@ -334,24 +350,24 @@ public class ReadData {
 
         String stage = "";
 
-        NodeList stageList = scene.getElementsByTagName("stage");
+        NodeList stageList = scene.getElementsByTagNameNS("*", "stage");
         if (stageList.getLength() > 0) {
             stage = stageList.item(0).getTextContent().trim();
         }
 
         // Get sp, speaker, speakerID and content
-        NodeList spList = scene.getElementsByTagName("sp");
+        NodeList spList = scene.getElementsByTagNameNS("*", "sp");
         for (int i = 0; i < spList.getLength(); i++) {
             Element sp = (Element) spList.item(i);
 
             String speaker = "";
             String speakerID = sp.getAttribute("who").replace("#", "").trim();
-            NodeList speakerTag = sp.getElementsByTagName("speaker");
+            NodeList speakerTag = sp.getElementsByTagNameNS("*", "speaker");
             if (speakerTag.getLength() > 0) {
                 speaker = speakerTag.item(0).getTextContent().trim();
             }
 
-            NodeList lTags = sp.getElementsByTagName("l");
+            NodeList lTags = sp.getElementsByTagNameNS("*", "l");
             List<String> lines = new ArrayList<>();
             for (int j = 0; j < lTags.getLength(); j++) {
                 lines.add(lTags.item(j).getTextContent().trim());
@@ -396,7 +412,7 @@ public class ReadData {
             if (!lgLines.isEmpty()) {
                 Document g = new Document();
                 g.append("speaker", stage.isEmpty() ? null : stage);
-                g.append("speakerID", "stage");
+                g.append("speakerID", "unknown");
                 g.append("content", lgLines);
                 list.add(g);
             }
@@ -408,7 +424,7 @@ public class ReadData {
     public static List<Document> backText(Element backElement) {
         List<Document> backDivs = new ArrayList<>();
 
-        NodeList divs = backElement.getElementsByTagName("div");
+        NodeList divs = backElement.getElementsByTagNameNS("*", "div");
         for (int i = 0; i < divs.getLength(); i++) {
             Element div = (Element) divs.item(i);
             Document back =  new Document();
@@ -418,17 +434,17 @@ public class ReadData {
                 back.append("type", type);
             }
 
-            NodeList headList = div.getElementsByTagName("head");
+            NodeList headList = div.getElementsByTagNameNS("*", "head");
             if (headList.getLength() > 0) {
                 back.append("head", headList.item(0).getTextContent().trim());
             }
 
-            NodeList lgList = div.getElementsByTagName("lg");
+            NodeList lgList = div.getElementsByTagNameNS("*", "lg");
             List<String> s = new ArrayList<>();
 
             for (int j = 0; j < lgList.getLength(); j++) {
                 Element lg = (Element) lgList.item(j);
-                NodeList lines = lg.getElementsByTagName("l");
+                NodeList lines = lg.getElementsByTagNameNS("*", "l");
 
                 StringBuilder builder = new StringBuilder();
                 for (int a = 0; a < lines.getLength(); a++) {
