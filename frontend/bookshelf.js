@@ -48,7 +48,7 @@ function bookshelf(data) {
       console.log("Line counts (sorted):", counts);
 
       // show characters (with line counts) in the selected book
-      drawPieChart(counts, (charId) => {
+      drawPieChart(counts, item.title, (charId) => {
         console.log("Clicked on: ", charId);  // select character in the pie chart
         topWords(charId, linesByCharacter);  // count the top words and draw the word cloud
       });

@@ -1,15 +1,27 @@
-function drawPieChart(data, onClickCallback) {
-  const margin = { top: 20, right: 150, bottom: 20, left: 20 };
+function drawPieChart(data, title, onClickCallback) {
+  const margin = { top: 50, right: 150, bottom: 20, left: 20 };
   const width = 600;
   const height = 400;
   const radius = Math.min(width - margin.left - margin.right, height - margin.top - margin.bottom) / 2;
+
+  console.log("draw pie chart for: ", title)
 
   d3.select("#pieChart").selectAll("*").remove(); // remove old
 
   const svg = d3.select("#pieChart")
     .attr("width", width)
-    .attr("height", height)
-    .append("g")
+    .attr("height", height);
+
+  // 添加标题
+  svg.append("text")
+    .attr("x", width / 2)
+    .attr("y", margin.top / 2)
+    .attr("text-anchor", "middle")
+    .style("font-size", "16px")
+    .style("font-weight", "bold")
+    .text(title);
+
+  const chartGroup = svg.append("g")
     .attr("transform", `translate(${margin.left + radius}, ${margin.top + radius})`);
 
   const color = d3.scaleOrdinal(d3.schemeCategory10);
@@ -22,13 +34,12 @@ function drawPieChart(data, onClickCallback) {
     .innerRadius(0)
     .outerRadius(radius);
 
-  const arcs = svg.selectAll("arc")
+  const arcs = chartGroup.selectAll("arc")
     .data(pie(data))
     .enter()
     .append("g")
     .attr("class", "arc");
 
-  // pie
   arcs.append("path")
     .attr("d", arc)
     .attr("fill", d => color(d.data.charId))
@@ -45,7 +56,6 @@ function drawPieChart(data, onClickCallback) {
       }
     });
 
-  // tooltip
   const totalLine = d3.sum(data, d => d.lineCount);
   arcs.append("title")
     .text(d => {
@@ -53,8 +63,7 @@ function drawPieChart(data, onClickCallback) {
       return `${d.data.name}: ${percent}%`;
     });
 
-  // legend
-  const legend = svg.selectAll(".legend")
+  const legend = chartGroup.selectAll(".legend")
     .data(data)
     .enter()
     .append("g")
@@ -72,7 +81,6 @@ function drawPieChart(data, onClickCallback) {
     .style("font-size", "12px")
     .text(d => `${d.name}: ${d.lineCount} lines`);
 }
-
 
 
 
