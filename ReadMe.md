@@ -27,7 +27,7 @@ reads all drama text files from `mongodb/data` folder. These files will be proce
 
 to run the module:
 
-- `cd mongodb/src/main/java`
-- run `Main.java`
+- `cd mongodb`
+- run `mvn compile` and `mvn exec:java -Dexec.mainClass="Main"`
 
-as of now, this module has successfully processed and stored 5 drama text files into MongoDB.
+as of now, this module has successfully processed and stored 10 drama text files into MongoDB.
