@@ -84,8 +84,27 @@ async function getTextByDramaWithSpeaker(req, res) {
   }
 }
 
+async function getFullDrama(req, res) {
+  const { id } = req.query;
+  if (!id) return res.status(400).json({ error: "missing id" });
+
+  try {
+    const client = await getClient();
+    const collection = client.db(DB_NAME).collection(COLLECTION_NAME);
+
+    const result = await collection.findOne({ id }, { projection: { _id: 0 } });
+
+    if (!result) return res.status(404).json({ error: "not found" });
+    res.json(result);
+  } catch (err) {
+    console.error("fail: ", err);
+    res.status(500).json({ error: "internal error" });
+  }
+}
+
 module.exports = {
   getDrama,
   getCharacterByDrama,
-  getTextByDramaWithSpeaker
+  getTextByDramaWithSpeaker,
+  getFullDrama
 };

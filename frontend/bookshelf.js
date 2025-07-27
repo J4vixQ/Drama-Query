@@ -36,7 +36,12 @@ function bookshelf(data) {
       const downloadBookBtn = document.getElementById('downloadBookBtn');
       if (downloadBookBtn) {
         downloadBookBtn.style.display = "inline-block";
-        downloadBookBtn.onclick = () => downloadJSON(item, `${(item.title || 'book').replace(/\s/g,'_')}.json`);
+        // downloadBookBtn.onclick = () => downloadJSON(item, `${(item.title || 'book').replace(/\s/g,'_')}.json`);
+        downloadBookBtn.onclick = async () => {
+          const fullItem = await fetch(`http://localhost:3000/api/getFullDrama?id=${encodeURIComponent(item.id)}`)
+            .then(res => res.json());
+          downloadJSON(fullItem, `${(item.title || 'book').replace(/\s/g,'_')}.json`);
+        };
       }
 
       const characters = await getCharacters(item.id);  // characters in book
