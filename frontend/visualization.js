@@ -1,3 +1,4 @@
+// Draw a pie chart showing line distribution per character
 function drawPieChart(data, title, onClickCallback) {
   const margin = { top: 50, right: 150, bottom: 20, left: 20 };
   const width = 600;
@@ -8,11 +9,12 @@ function drawPieChart(data, title, onClickCallback) {
 
   d3.select("#pieChart").selectAll("*").remove(); // remove old
 
+  // Create SVG element
   const svg = d3.select("#pieChart")
     .attr("width", width)
     .attr("height", height);
 
-  // 添加标题
+  // Add title
   svg.append("text")
     .attr("x", width / 2)
     .attr("y", margin.top / 2)
@@ -21,11 +23,14 @@ function drawPieChart(data, title, onClickCallback) {
     .style("font-weight", "bold")
     .text(title);
 
+  // Group for the pie chart
   const chartGroup = svg.append("g")
     .attr("transform", `translate(${margin.left + radius}, ${margin.top + radius})`);
 
+  // Assign colors for each character using D3 scheme
   const color = d3.scaleOrdinal(d3.schemeCategory10);
 
+  // draw
   const pie = d3.pie()
     .value(d => d.lineCount)
     .sort(null);
@@ -45,17 +50,18 @@ function drawPieChart(data, title, onClickCallback) {
     .attr("fill", d => color(d.data.charId))
     .on("mouseover", function () {
       d3.selectAll("path").style("opacity", 0.3);
-      d3.select(this).style("opacity", 1);
+      d3.select(this).style("opacity", 1);  // highlight hovered slice
     })
     .on("mouseout", function () {
-      d3.selectAll("path").style("opacity", 1);
+      d3.selectAll("path").style("opacity", 1);  // reset all
     })
     .on("click", function (event, d) {
       if (onClickCallback) {
-        onClickCallback(d.data.charId);
+        onClickCallback(d.data.charId);  // pass charId to callback
       }
     });
 
+  // Add tooltip info (percentage)
   const totalLine = d3.sum(data, d => d.lineCount);
   arcs.append("title")
     .text(d => {
@@ -63,6 +69,7 @@ function drawPieChart(data, title, onClickCallback) {
       return `${d.data.name}: ${percent}%`;
     });
 
+  // Add legend
   const legend = chartGroup.selectAll(".legend")
     .data(data)
     .enter()
@@ -79,12 +86,12 @@ function drawPieChart(data, title, onClickCallback) {
     .attr("x", 18)
     .attr("y", 10)
     .style("font-size", "12px")
-    .text(d => `${d.name}: ${d.lineCount} lines`);
+    .text(d => `${d.name}: ${d.lineCount} lines`);  // specific line count
 }
 
 
 
-
+// Convert character lines to word frequency object
 function lines2words(lines) {
   const wordCounts = {};
 
@@ -112,17 +119,18 @@ function lines2words(lines) {
       .replace(/[^\w\s]/g, '')  // remove punctuation
       .replace(/\d+/g, '');  // remove numbers
 
-    const words = clean.split(/\s+/);
+    const words = clean.split(/\s+/);  // split into words
 
     words.forEach(word => {
-      if (!word || stopWords.has(word)) return;
-      wordCounts[word] = (wordCounts[word] || 0) + 1;
+      if (!word || stopWords.has(word)) return;  // skip empty or stop words
+      wordCounts[word] = (wordCounts[word] || 0) + 1;  // count frequency
     });
   });
 
   return wordCounts;
 }
 
+// Get top frequent words from the count object
 function getTopWords(wordCounts, maxWords = 100, percent = 0.1) {  // at most 10% or 100 words
   const sorted = Object.entries(wordCounts)
     .sort((a, b) => b[1] - a[1]); // order by frequency descending
@@ -135,6 +143,7 @@ function getTopWords(wordCounts, maxWords = 100, percent = 0.1) {  // at most 10
   return sorted.slice(0, limit).map(([text, value]) => ({ text, value }));
 }
 
+// Render a top word list below the charts
 function displayTopWords(topWords) {
   const container = document.getElementById("topWordsOutput");
   container.innerHTML = "<h3>Top Words</h3>";
@@ -149,6 +158,7 @@ function displayTopWords(topWords) {
   container.appendChild(list);
 }
 
+// Top-level wrapper for analyzing top words of a character
 function topWords(characterId, linesByCharacter) {
   const charData = linesByCharacter[characterId];
   if (!charData || !Array.isArray(charData.lines)) {
@@ -162,6 +172,7 @@ function topWords(characterId, linesByCharacter) {
   drawWordCloud(topWords, characterId);
 }
 
+// Draw a word cloud visualization for a given character
 function drawWordCloud(words, characterId) {
   d3.select("#wordCloud").selectAll("*").remove();
 
@@ -170,11 +181,10 @@ function drawWordCloud(words, characterId) {
         width = +svg.attr("width") - margin.left - margin.right,
         height = +svg.attr("height") - margin.top - margin.bottom;
 
-  // 提取角色名
+  // Extract and format character name from ID
   const parts = characterId.split('-');
   const charName = parts.slice(1).join(' ').replace(/-/g, ' ').toUpperCase();
 
-  // 添加标题
   svg.append("text")
     .attr("x", margin.left)
     .attr("y", margin.top / 2)
@@ -191,7 +201,8 @@ function drawWordCloud(words, characterId) {
     .on("end", draw);
 
   layout.start();
-
+  
+  // Actual drawing of cloud words
   function draw(words) {
     svg.append("g")
       .attr("transform", `translate(${margin.left + width / 2}, ${margin.top + height / 2})`)

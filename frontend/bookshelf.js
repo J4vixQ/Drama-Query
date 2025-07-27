@@ -1,14 +1,4 @@
-// function printAll(data) {
-//   const list = document.getElementById('dataList');  // this is the <u1> element in HTML
-//   list.innerHTML = '';
-
-//   data.forEach(item => {
-//     const li = document.createElement('li');
-//     const teiHeader = item.TEI?.teiHeader || {};  // only show teiHeader
-//     li.textContent = JSON.stringify(teiHeader, null, 2);  // for better readability
-//     list.appendChild(li);
-//   });
-// }
+let currentSelectedBook = null; // to keep track of the currently selected book
 
 function bookshelf(data) {
   const container = document.getElementById('cardContainer');
@@ -40,6 +30,15 @@ function bookshelf(data) {
       // select one book from the presented ones
       console.log("Clicked on: ", item);
       console.log("book id: ", item.id);
+
+      // for download
+      currentSelectedBook = item;
+      const downloadBookBtn = document.getElementById('downloadBookBtn');
+      if (downloadBookBtn) {
+        downloadBookBtn.style.display = "inline-block";
+        downloadBookBtn.onclick = () => downloadJSON(item, `${(item.title || 'book').replace(/\s/g,'_')}.json`);
+      }
+
       const characters = await getCharacters(item.id);  // characters in book
       console.log("characters: ", characters);
       const linesByCharacter = await getLinesByCharacter(item.id, characters);  // lines by character in book
@@ -58,3 +57,13 @@ function bookshelf(data) {
   });
 }
 
+// download json file
+function downloadJSON(obj, filename) {
+  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(obj, null, 2));
+  const downloadAnchorNode = document.createElement('a');
+  downloadAnchorNode.setAttribute("href", dataStr);
+  downloadAnchorNode.setAttribute("download", filename);
+  document.body.appendChild(downloadAnchorNode); // required for firefox
+  downloadAnchorNode.click();
+  downloadAnchorNode.remove();
+}

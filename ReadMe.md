@@ -31,3 +31,22 @@ to run the module:
 - run `mvn compile` and `mvn exec:java -Dexec.mainClass="Main"`
 
 as of now, this module has successfully processed and stored 10 drama text files into MongoDB.
+
+![img](img/dramas.png)
+
+### sample queries
+
+Title
+```
+Caesar / darius
+```
+
+Author
+```
+william / anon
+```
+
+Year
+```
+1607
+```
