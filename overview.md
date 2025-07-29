@@ -87,12 +87,6 @@ The following structure defines the schema of each parsed Drama Text file, which
             name: "Marcus Brutus"
             sex: "MALE"
         }
-        1: Object
-        {
-            id: "eng000261-decius-brutus"
-            name: "Decius Brutus"
-            sex: "MALE"
-        }
     }
     text: Object // Save the contents of Drama Text, saving the front, body, and back parts separately
     {
