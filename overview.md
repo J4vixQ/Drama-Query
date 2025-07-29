@@ -1,8 +1,8 @@
 # Drama Query – Overview
 
-Chufan Zhang
-Jianyang Gu
-Ziqian Mo
+- Chufan Zhang
+- Jianyang Gu
+- Ziqian Mo
 
 ## Objective
 
