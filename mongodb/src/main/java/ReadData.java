@@ -84,7 +84,7 @@ public class ReadData {
             if (authorName != null && !authorName.isEmpty()){
                 result.append("author", authorName);
             } else {
-                result.append("author", null)
+                result.append("author", null);
             }
             //Get drama text creation date
 
@@ -318,7 +318,7 @@ public class ReadData {
 
                 text.append("front", front);
             } else {
-                text.append("front", null)
+                text.append("front", null);
             }
 
 
