@@ -46,3 +46,7 @@ This section describes the pipeline of the Drama Text Query project, from XML va
 4. Then the data is stored in MongoDB database.
 5. The backend provides RESTful API endpoints for querying the data.
 6. The frontend visualizes the data.
+
+The database schema is in `DataSchema.md`
+
+The query details are in `backend/controllers/textsController.js`
