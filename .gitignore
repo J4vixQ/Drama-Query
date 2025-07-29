@@ -22,3 +22,5 @@ yarn-error.log*
 mongodb/MongoDB/db/journal/
 mongodb/MongoDB/db/*.log
 mongodb/MongoDB/db/WiredTiger*
+
+.claude
