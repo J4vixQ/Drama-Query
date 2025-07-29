@@ -32,9 +32,11 @@ Node.js, Express.js
 HTML + CSS + D3.js
 
 **Sample Queries**:
+```
 Title:   Caesar, Darius
 Author:  William, Anon  
 Year:    1607, 1599
+```
 
 ## Project Workflow
 
